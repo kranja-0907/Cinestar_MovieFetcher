@@ -1,0 +1,497 @@
+CREATE DATABASE JAVA1
+GO
+USE JAVA1
+GO
+
+CREATE TABLE Userr
+(
+	IDUser INT PRIMARY KEY IDENTITY,
+	Username NVARCHAR(20) NOT NULL,
+	Passcode NVARCHAR(20) NOT NULL,
+	Rolee BIT NOT NULL
+)
+
+insert into Userr values('Leon Kranjcevic','vjeronauk',1)
+
+CREATE TABLE Director
+(
+	IDDirector INT PRIMARY KEY IDENTITY,
+	FirstName NVARCHAR(20) NOT NULL,
+	LastName NVARCHAR(20) NOT NULL
+)
+
+CREATE TABLE Actor
+(
+	IDActor INT PRIMARY KEY IDENTITY,
+	FirstName NVARCHAR(20) NOT NULL,
+	LastName NVARCHAR(20) NOT NULL
+)
+
+CREATE TABLE Genre
+(
+	IDGenre INT PRIMARY KEY IDENTITY,
+	Title NVARCHAR(50)
+)
+
+CREATE TABLE Movie
+(
+	IDMovie INT PRIMARY KEY IDENTITY,
+	Title NVARCHAR(300),
+	PublishedDate NVARCHAR(90),
+	Description NVARCHAR(900),
+	EngTitle NVARCHAR(300),
+	Director NVARCHAR(300),
+	Actor NVARCHAR(300),
+	Duration INT,
+	Genre NVARCHAR(300),
+	PicturePath NVARCHAR(90),
+	Link NVARCHAR(300)	
+)
+
+CREATE TABLE MovieDirector
+(
+	IDMovieDirector INT PRIMARY KEY IDENTITY,
+	MovieID INT foreign key references Movie(IDMovie),
+	DirectorID INT foreign key references Director(IDDirector)
+)
+
+CREATE TABLE MovieActor
+(
+	IDMovieActor INT PRIMARY KEY IDENTITY,
+	MovieID INT foreign key references Movie(IDMovie),
+	ActorID INT foreign key references Actor(IDActor)
+)
+
+CREATE TABLE MovieGenre
+(
+	IDMovieGenre INT PRIMARY KEY IDENTITY,
+	MovieID INT foreign key references Movie(IDMovie),
+	GenreID INT foreign key references Genre(IDGenre)
+)
+
+GO
+
+CREATE PROCEDURE createMovie
+	@Id INT,
+	@Title NVARCHAR(300),
+	@PublishedDate NVARCHAR(90),
+	@Description NVARCHAR(900),
+	@EngTitle NVARCHAR(300),
+	@Director  NVARCHAR(300),
+	@Actor  NVARCHAR(300) ,
+	@Duration INT,
+	@Genre  NVARCHAR(300),
+	@PicturePath NVARCHAR(90),
+	@Link NVARCHAR(300)
+AS 
+BEGIN 
+	INSERT INTO Movie VALUES(@Title, @PublishedDate, @Description, @EngTitle, @Director, @Actor, @Duration, @Genre, @PicturePath, @Link)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createActor
+	@Id INT,
+	@FirstName NVARCHAR(300),
+	@LastName NVARCHAR(90)
+AS 
+BEGIN 
+	INSERT INTO Actor VALUES(@FirstName, @LastName)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createDirector
+	@Id INT,
+	@FirstName NVARCHAR(300),
+	@LastName NVARCHAR(90)
+AS 
+BEGIN 
+	INSERT INTO Director VALUES(@FirstName, @LastName)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createUser
+	@Id INT,
+	@UserName NVARCHAR(300),
+	@Password NVARCHAR(90),
+	@Role BIT
+AS 
+BEGIN 
+	INSERT INTO Userr VALUES(@UserName, @Password, @Role)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createGenre
+	@Id INT,
+	@Title NVARCHAR(300)
+AS 
+BEGIN 
+	INSERT INTO Genre VALUES(@Title)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createMovieActor
+	@Id INT,
+	@IDMovie INT,
+	@IDActor INT
+AS 
+BEGIN 
+	INSERT INTO MovieActor VALUES(@IDMovie, @IDActor)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createMovieDirector
+	@Id INT,
+	@IDMovie INT,
+	@IDDirector INT
+AS 
+BEGIN 
+	INSERT INTO MovieDirector VALUES(@IDMovie, @IDDirector)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE createMovieGenre
+	@Id INT,
+	@IDMovie INT,
+	@IDGenre INT
+AS 
+BEGIN 
+	INSERT INTO MovieGenre VALUES(@IDMovie, @IDGenre)
+	SET @Id = SCOPE_IDENTITY()
+END
+GO
+
+
+CREATE PROCEDURE updateMovie
+	@Title NVARCHAR(300),
+	@PublishedDate NVARCHAR(90),
+	@Description NVARCHAR(900),
+	@EngTitle NVARCHAR(300),
+	@Director  NVARCHAR(300),
+	@Actor  NVARCHAR(300) ,
+	@Duration INT,
+	@Genre  NVARCHAR(300),
+	@PicturePath NVARCHAR(90),
+	@Link NVARCHAR(300),
+	@IDMovie INT
+AS 
+BEGIN 
+	UPDATE Movie SET 
+		Title = @Title, 
+		PublishedDate = @PublishedDate, 
+		Description = @Description,
+		EngTitle = @EngTitle,
+		Director = @Director,
+		Actor = @Actor,
+		Duration = @Duration,
+		Genre = @Genre,
+		PicturePath = @PicturePath,
+		Link = @Link
+	WHERE 
+		IDMovie = @IDMovie
+END
+GO
+CREATE PROCEDURE updateUser
+	@UserName NVARCHAR(300),
+	@Password NVARCHAR(90),
+	@Role BIT,
+	@IDUser INT
+AS 
+BEGIN 
+	UPDATE Userr SET 
+		Username = @UserName, 
+		Passcode = @Password,
+		Rolee = @Role
+	WHERE 
+		IDUser = @IDUser
+END
+GO
+CREATE PROCEDURE updateActor
+	@FirstName NVARCHAR(300),
+	@LastName NVARCHAR(90),
+	@IDActor INT
+AS 
+BEGIN 
+	UPDATE Actor SET 
+		FirstName = @FirstName, 
+		LastName = @LastName
+	WHERE 
+		IDActor = @IDActor
+END
+GO
+CREATE PROCEDURE updateDirector
+	@FirstName NVARCHAR(300),
+	@LastName NVARCHAR(90),
+	@IDDirector INT
+AS 
+BEGIN 
+	UPDATE Director SET 
+		FirstName = @FirstName, 
+		LastName = @LastName
+	WHERE 
+		IDDirector = @IDDirector
+END
+GO
+CREATE PROCEDURE updateGenre
+	@Title NVARCHAR(300),
+	@IDGenre INT
+AS 
+BEGIN 
+	UPDATE Genre SET 
+		Title = @Title
+	WHERE 
+		IDGenre = @IDGenre
+END
+GO
+CREATE PROCEDURE updateMovieGenre
+	@MovieID INT,
+	@GenreID INT,
+	@IDMovieGenre INT
+AS 
+BEGIN 
+	UPDATE MovieGenre SET 
+		MovieID = @MovieID,
+		GenreID = @GenreID
+	WHERE 
+		IDMovieGenre = @IDMovieGenre
+END
+GO
+CREATE PROCEDURE updateMovieActor
+	@MovieID INT,
+	@ActorID INT,
+	@IDMovieActor INT
+AS 
+BEGIN 
+	UPDATE MovieActor SET 
+		MovieID = @MovieID,
+		ActorID = @ActorID
+	WHERE 
+		IDMovieActor = @IDMovieActor
+END
+GO
+CREATE PROCEDURE updateMovieDirector
+	@MovieID INT,
+	@DirectorID INT,
+	@IDMovieDirector INT
+AS 
+BEGIN 
+	UPDATE MovieDirector SET 
+		MovieID = @MovieID,
+		DirectorID = @DirectorID
+	WHERE 
+		IDMovieDirector = @IDMovieDirector
+END
+GO
+
+
+
+
+CREATE PROCEDURE deleteMovie
+	@IDMovie int
+AS 
+BEGIN 
+	DELETE FROM MovieActor WHERE MovieID = @IDMovie
+	DELETE FROM MovieDirector WHERE MovieID = @IDMovie
+	DELETE FROM MovieGenre WHERE MovieID = @IDMovie
+	DELETE FROM Movie
+	WHERE IDMovie = @IDMovie
+END
+GO
+CREATE PROCEDURE deleteUser
+	@IDUser int
+AS 
+BEGIN 
+	DELETE FROM Userr
+	WHERE IDUser = @IDUser
+END
+GO
+CREATE PROCEDURE deleteActor
+	@IDActor int
+AS 
+BEGIN 
+	DELETE FROM MovieActor WHERE ActorID = @IDActor
+	DELETE FROM Actor
+	WHERE IDActor = @IDActor
+END
+GO
+CREATE PROCEDURE deleteDirector
+	@IDDirector int
+AS 
+BEGIN 
+	DELETE FROM MovieDirector WHERE DirectorID = @IDDirector
+	DELETE FROM Director
+	WHERE IDDirector = @IDDirector
+END
+GO
+CREATE PROCEDURE deleteGenre
+	@IDGenre int
+AS 
+BEGIN 
+	DELETE FROM MovieGenre WHERE GenreID = @IDGenre
+	DELETE FROM Genre
+	WHERE IDGenre = @IDGenre
+END
+GO
+
+
+
+
+
+
+CREATE PROCEDURE selectMovie
+	@IdMovie INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		Movie
+	WHERE 
+		IDMovie = @IdMovie
+END
+GO
+CREATE PROCEDURE selectDirector
+	@IdDirector INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		Director
+	WHERE 
+		IDDirector = @IdDirector
+END
+GO
+CREATE PROCEDURE selectActor
+	@IdActor INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		Actor
+	WHERE 
+		IDActor = @IdActor
+END
+GO
+CREATE PROCEDURE selectUser
+	@IdUser INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		Userr
+	WHERE 
+		IDUser = @IdUser
+END
+GO
+CREATE PROCEDURE selectGenre
+	@IdGenre INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		Genre
+	WHERE 
+		IDGenre = @IdGenre
+END
+GO
+
+
+CREATE PROCEDURE selectMovieActor
+	@IdMovieActor INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		MovieActor
+	WHERE 
+		IDMovieActor = @IdMovieActor
+END
+GO
+
+CREATE PROCEDURE selectMovieGenre
+	@IdMovieGenre INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		MovieGenre
+	WHERE 
+		IDMovieGenre = @IdMovieGenre
+END
+GO
+CREATE PROCEDURE selectMovieDirector
+	@IdMovieDirector INT
+AS 
+BEGIN 
+	SELECT 
+		* 
+	FROM 
+		MovieDirector
+	WHERE 
+		IDMovieDirector = @IdMovieDirector
+END
+GO
+
+
+
+
+CREATE PROCEDURE selectMovies
+AS 
+BEGIN 
+	SELECT * FROM Movie
+END
+GO
+
+CREATE PROCEDURE selectActors
+AS 
+BEGIN 
+	SELECT * FROM Actor
+END
+GO
+
+CREATE PROCEDURE selectDirectors
+AS 
+BEGIN 
+	SELECT * FROM Director
+END
+GO
+
+CREATE PROCEDURE selectUsers
+AS 
+BEGIN 
+	SELECT * FROM Userr
+END
+GO
+
+CREATE PROCEDURE selectGenres
+AS 
+BEGIN 
+	SELECT * FROM Genre
+END
+GO
+
+CREATE PROCEDURE selectMovieActors
+AS 
+BEGIN 
+	SELECT * FROM MovieActor
+END
+GO
+
+CREATE PROCEDURE selectMovieGenres
+AS 
+BEGIN 
+	SELECT * FROM MovieGenre
+END
+GO
+
+CREATE PROCEDURE selectMovieDirectors
+AS 
+BEGIN 
+	SELECT * FROM MovieDirector
+END
+GO
